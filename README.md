@@ -1,10 +1,19 @@
 # kafka-sasl
 repository containing examples on how to connect to kafka via sasl
 
-# plain text
+# PLAINTEXT
+We begin with no encryption and no authentication aka: "PLAINTEXT"
 
-## telegraf-plain.conf
-```telegraf-plain.conf
+## kafka
+```docker-compose.yml
+ kafka:
+  environment:
+   KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+   KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+```
+
+## telegraf
+```telegraf.conf
 [[outputs.kafka]]
   brokers = ["kafka:9092"]
   topic = "telegraf"
@@ -48,3 +57,76 @@ kafkacat_1   |
 kafkacat_1   |  artition: 0    Offset: 0
 kafkacat_1   | --
 ```
+
+# SASL/PLAIN
+Now we add authentication
+
+## kafka
+```docker-compose.yml
+ kafka:
+  environment:
+   SECURITY_PLUGINS_OPTS=-Djava.security.auth.login.config=/etc/schema-registry/kafka_client_jaas.conf
+   KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAIN:SASL_PLAIN
+   KAFKA_ADVERTISED_LISTENERS: SASL_PLAIN://kafka:9093
+```
+
+## telegraf
+```telegraf.conf
+```
+
+# SASL/SSL
+Now we add SSL encryption:
+
+## kafka
+```docker-compose.yml
+ kafka:
+  environment:
+   SECURITY_PLUGINS_OPTS=-Djava.security.auth.login.config=/etc/schema-registry/kafka_client_jaas.conf
+   KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_SSL:SASL_SSL
+   KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka:9093
+```
+
+## telegraf
+```telegraf.conf
+```
+
+# SASL/SCRAM255
+
+## kafka
+```docker-compose.yml
+```
+
+## telegraf
+```telegraf.conf
+```
+
+# SASL/SCRAM512
+
+## kafka
+```docker-compose.yml
+```
+
+## telegraf
+```telegraf.conf
+```
+
+# SASL/GSSAPI aka Kerberos
+
+## kafka
+```docker-compose.yml
+```
+
+## telegraf
+```telegraf.conf
+```
+
+# SASL/OAUTHBEARER
+
+## kafka
+```docker-compose.yml
+```
+
+## telegraf
+```telegraf.conf
+```
+
