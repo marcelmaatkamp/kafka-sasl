@@ -29,7 +29,7 @@ services:
   depends_on:
    - kafka
   volumes:
-   - ./telegraf-plain.conf:/etc/telegraf/telegraf.conf
+   - ./telegraf.conf:/etc/telegraf/telegraf.conf
 
  kafkacat:
   image: confluentinc/cp-kafkacat:${CP_KAFKA_VERSION}
