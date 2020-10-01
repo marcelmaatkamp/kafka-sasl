@@ -2,6 +2,16 @@
 repository containing examples on how to connect to kafka via sasl
 
 # plain text
+
+## telegraf-plain.conf
+```telegraf-plain.conf
+[[outputs.kafka]]
+  brokers = ["kafka:9092"]
+  topic = "telegraf"
+  enable_tls = false
+```
+
+## start brokers
 ```
 % docker-compose -f docker-compose-plain.yaml up -d kafka
 % docker-compose -f docker-compose-plain.yaml up telegraf kafkacat
