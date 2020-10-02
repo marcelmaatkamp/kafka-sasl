@@ -1,6 +1,10 @@
 # kafka-sasl
 repository containing examples on how to connect to kafka via sasl
 
+| xx | 
+| -- |
+| [PLAINTEXT](#PLAINTEXT) |
+
 # PLAINTEXT
 We begin with no encryption and no authentication aka: "PLAINTEXT"
 
