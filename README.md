@@ -1,8 +1,8 @@
-# kafka-sasl
-This repository contains examples on how to connect to kafka via [Simple Authentication and Security Layer
-(SASL)](https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer)
+# Connect to kafka via various sasl mechanisms
+This repository contains examples on how to connect to kafka via various [Simple Authentication and Security Layer
+(SASL)](https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer) mechanisms.
 
-| SASL | Description |
+| SASL mechanism | Description |
 | -- | -- |
 | [PLAINTEXT](#PLAINTEXT) | no encryption and authentication |
 | [SASL/PLAIN](#SASL/PLAIN) | username/password authentication |
