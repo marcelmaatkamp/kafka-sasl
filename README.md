@@ -5,12 +5,12 @@ This repository contains examples on how to connect to kafka via various [Simple
 | SASL mechanism | Description |
 | -- | -- |
 | [PLAINTEXT](#PLAINTEXT) | no encryption and authentication |
-| [SASL/PLAIN](#SASL/PLAIN) | username/password authentication |
-| [SASL/SSL](#SASL/SSL) | ssl encryption |
-| [SASL/SCRAM255](#SASL/SCRAM255) | |
-| [SASL/SCRAM512](#SASL/SCRAM512) | |
-| [SASL/GSSAPI](#SASL/SGSSAPI) | |
-| [SASL/OAUTHBEARER](#SASL/OAUTHBEARER) | oidc (keycloak) authentication |
+| [SASL/PLAIN](#SASLPLAIN) | username/password authentication |
+| [SASL/SSL](#SASLSSL) | ssl encryption |
+| [SASL/SCRAM255](#SASLSCRAM255) | |
+| [SASL/SCRAM512](#SASLSCRAM512) | |
+| [SASL/GSSAPI](#SASLSGSSAPI) | |
+| [SASL/OAUTHBEARER](#SASLOAUTHBEARER) | oidc (keycloak) authentication |
 
 # PLAINTEXT
 We begin with no encryption and no authentication aka: "PLAINTEXT"
