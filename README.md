@@ -1,5 +1,16 @@
-# kafka-sasl
-repository containing examples on how to connect to kafka via sasl
+# Connect to kafka via various sasl mechanisms
+This repository contains examples on how to connect to kafka via various [Simple Authentication and Security Layer
+(SASL)](https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer) mechanisms.
+
+| SASL mechanism | Description |
+| -- | -- |
+| [PLAINTEXT](#PLAINTEXT) | no encryption and authentication |
+| [SASL/PLAIN](#SASLPLAIN) | username/password authentication |
+| [SASL/SSL](#SASLSSL) | ssl encryption |
+| [SASL/SCRAM255](#SASLSCRAM255) | |
+| [SASL/SCRAM512](#SASLSCRAM512) | |
+| [SASL/GSSAPI](#SASLGSSAPI) | |
+| [SASL/OAUTHBEARER](#SASLOAUTHBEARER) | oidc (keycloak) authentication |
 
 # PLAINTEXT
 We begin with no encryption and no authentication aka: "PLAINTEXT"
@@ -138,7 +149,8 @@ Now we add SSL encryption:
 ```telegraf.conf
 ```
 
-# SASL/GSSAPI aka Kerberos
+# SASL/GSSAPI
+kerberos
 
 ## kafka
 ```docker-compose.yml
