@@ -9,6 +9,7 @@ This repository contains examples on how to connect to kafka via various [Simple
 | [SASL/SSL](#SASL/SSL) | ssl encryption |
 | [SASL/SCRAM255](#SASL/SCRAM255) | |
 | [SASL/SCRAM512](#SASL/SCRAM512) | |
+| [SASL/GSSAPI](#SASL/SGSSAPI) | |
 | [SASL/OAUTHBEARER](#SASL/OAUTHBEARER) | oidc (keycloak) authentication |
 
 # PLAINTEXT
@@ -148,7 +149,8 @@ Now we add SSL encryption:
 ```telegraf.conf
 ```
 
-# SASL/GSSAPI aka Kerberos
+# SASL/GSSAPI
+kerberos
 
 ## kafka
 ```docker-compose.yml
