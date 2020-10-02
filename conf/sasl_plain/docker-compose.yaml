@@ -1,0 +1,59 @@
+version: '3.4'
+services:
+  
+ zookeeper:
+  image: confluentinc/cp-zookeeper:${CP_KAFKA_VERSION}
+  environment:
+   ZOOKEEPER_CLIENT_PORT: 2181
+   ZOOKEEPER_TICK_TIME: 2000
+   KAFKA_OPTS: |-
+    -Djava.security.auth.login.config=/etc/zookeeper_jaas.conf 
+    -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider 
+    -Dzookeeper.requireClientAuthScheme=sasl
+  volumes:
+   - ./zookeeper_jaas.conf:/etc/zookeeper_jaas.conf
+  healthcheck:
+   test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181 | grep imok"]
+   start_period: 30s
+
+ kafka:
+  image: confluentinc/cp-server:${CP_KAFKA_VERSION}
+  depends_on:
+   - zookeeper
+  environment:
+   KAFKA_BROKER_ID: 1 
+   KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+   KAFKA_ZOOKEEPER_SASL_CLIENT: "true"
+   KAFKA_LOG4J_ROOT_LOGLEVEL: WARN 
+   KAFKA_TOOLS_LOG4J_LOGLEVEL: ERROR 
+   KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_SASL_PLAINTEXT:SASL_PLAINTEXT
+   KAFKA_ADVERTISED_LISTENERS: INTERNAL_SASL_PLAINTEXT://kafka:9093
+   KAFKA_LISTENERS: INTERNAL_SASL_PLAINTEXT://kafka:9093
+   KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_SASL_PLAINTEXT
+#  KAFKA_SSL_CLIENT_AUTH: required
+   KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+   KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+   KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+   KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+   CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+   KAFKA_OPTS: -Djdk.tls.rejectClientInitiatedRenegotiation=true -Djava.security.auth.login.config=/etc/kafka_jaas.conf 
+  volumes:
+   - ./kafka_jaas.conf:/etc/kafka_jaas.conf
+  healthcheck:
+   test: ["CMD", "nc", "127.0.0.1", "9093"]
+   start_period: 30s
+
+ telegraf-to-kafka:
+  image: telegraf:1.15
+  depends_on:
+   - kafka
+  volumes:
+   - ./telegraf-out.conf:/etc/telegraf/telegraf.conf
+
+ telegraf:
+  image: telegraf:1.15
+  depends_on:
+   - kafka
+   - telegraf-to-kafka
+  volumes:
+   - ./telegraf-in.conf:/etc/telegraf/telegraf.conf
