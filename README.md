@@ -9,7 +9,7 @@ This repository contains examples on how to connect to kafka via various [Simple
 | [SASL/SSL](#SASLSSL) | ssl encryption |
 | [SASL/SCRAM255](#SASLSCRAM255) | |
 | [SASL/SCRAM512](#SASLSCRAM512) | |
-| [SASL/GSSAPI](#SASLSGSSAPI) | |
+| [SASL/GSSAPI](#SASLGSSAPI) | |
 | [SASL/OAUTHBEARER](#SASLOAUTHBEARER) | oidc (keycloak) authentication |
 
 # PLAINTEXT
