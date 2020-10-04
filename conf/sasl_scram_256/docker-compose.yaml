@@ -57,16 +57,17 @@ services:
    KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-256
    KAFKA_LISTENERS: SASL_SSL://kafka1:9093
    KAFKA_ADVERTISED_LISTENERS: SASL_SSL://kafka1:9093
+   KAFKA_INTER_BROKER_LISTENER_NAME: SASL_SSL
    KAFKA_SSL_KEYSTORE_FILENAME: kafka.jks
    KAFKA_SSL_KEY_CREDENTIALS: kafka.creds
    KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka.creds
   volumes:
    - ./conf/kafka/jaas.conf:/etc/kafka/jaas.conf
-   - ./conf/kafka/kafka.key:/etc/kafka/kafka.key
-   - ./conf/kafka/kafka.crt:/etc/kafka/kafka.crt
-   - ./conf/kafka/kafka.pem:/etc/kafka/kafka.pem
-   - ./conf/kafka/kafka.creds:/etc/kafka/secrets/kafka.creds
-   - ./conf/kafka/kafka.jks:/etc/kafka/secrets/kafka.jks
+   - ./conf/kafka/keys/kafka.key:/etc/kafka/kafka.key
+   - ./conf/kafka/keys/kafka.crt:/etc/kafka/kafka.crt
+   - ./conf/kafka/keys/kafka.pem:/etc/kafka/kafka.pem
+   - ./conf/kafka/keys/kafka.jks:/etc/kafka/secrets/kafka.jks
+   - ./conf/kafka/keys/kafka_keystore_creds:/etc/kafka/secrets/kafka.creds
   healthcheck:
    test: ["CMD", "nc", "127.0.0.1", "9093"]
    start_period: 30s
