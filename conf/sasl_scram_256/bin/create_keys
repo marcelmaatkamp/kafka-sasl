@@ -45,7 +45,7 @@ openssl x509 -req \
   -CA ${WORKDIR}/${CA}.crt \
   -CAkey ${WORKDIR}/${CA}.key \
   -in ${WORKDIR}/client.req \
-  -out ${WORKDIR}/client..pem \
+  -out ${WORKDIR}/client.pem \
   -days 9999 \
   -CAcreateserial \
   -passin "pass:${PASS}"
@@ -54,9 +54,9 @@ openssl x509 -req \
 
 echo "generating a private key without passphrase"
 openssl rsa \
-  -in ${WORKDIR}/kafkacat.client.key \
+  -in ${WORKDIR}/client.key \
   -passin "pass:${PASS}" \
-  -out ${WORKDIR}/kafkacat-raw-private-key.pem
+  -out ${WORKDIR}/client.key.pem
 
 for BROKER in kafka
 do
