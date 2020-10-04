@@ -1,0 +1,25 @@
+#!/bin/bash
+NAME=${1}
+WORKDIR=${2}
+KEY_FILE=${WORKDIR}/${NAME}.key
+CERT_FILE=${WORKDIR}/${NAME}.crt
+PEM_FILE=${WORKDIR}/${NAME}.pem
+KEYSTORE_FILE=${WORKDIR}/${NAME}.jks
+KEYSTORE_FILE_PKCS12=${WORKDIR}/${NAME}.pkcs12
+
+openssl req \
+ -newkey rsa:2048 -nodes \
+ -keyout ${KEY_FILE} \
+ -x509 -days 365 \
+ -out ${CERT_FILE}
+
+openssl x509 -in ${CERT_FILE} -out ${PEM_FILE} -outform PEM
+keytool -genkeypair -keyalg RSA -keystore ${KEYSTORE_FILE}
+keytool -importcert -trustcacerts \
+ -file ${CERT_FILE} \
+ -alias localhost \
+ -keystore ${KEYSTORE_FILE}
+keytool -importkeystore \
+ -srckeystore ${KEYSTORE_FILE} \
+ -destkeystore ${KEYSTORE_FILE_PKCS12} \
+ -deststoretype pkcs12

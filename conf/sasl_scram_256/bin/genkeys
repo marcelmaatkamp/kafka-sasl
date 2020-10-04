@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# generate keys 
+keytool -keystore kafka.server.keystore.jks -alias localhost -validity 3650 -genkey 
+ 
+# Create Certificate Authority.
+# Pick one of the node, or separate server to store ca-key and ca-cert. 
+openssl req -new -x509 -keyout ca-key -out ca-cert -days 3650 
+ 
+# add certificate to client and broker trust store. 
+# each broker and client in each node register the same ca-cert 
+keytool -keystore kafka.client.truststore.jks -alias CARoot -import -file ca-cert 
+keytool -keystore kafka.server.truststore.jks -alias CARoot -importcert -file ca-cert 
+ 
+# Create CSR – signing request for each node.  
+# {n} represent node number. For instance, node-1 will be cert-file1 
+keytool -keystore kafka.server.keystore.jks -alias localhost -certreq -file cert-file{n} 
+ 
+# Sign with CA for each cert-file. 
+# Use same ca-key and ca-cert for each signing. 
+openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file{n} -out cert-signed{n} -days 3650 -CAcreateserial -passin pass:{password} 
+ 
+# Import into broker keystore 
+keytool -keystore kafka.server.keystore.jks -alias CARoot -import -file ca-cert 
+keytool -keystore kafka.server.keystore.jks -alias localhost -import -file cert-signed{n}
