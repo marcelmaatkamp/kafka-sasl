@@ -10,6 +10,8 @@ PASS=confluent
 WORKDIR=conf/kafka/keys
 CA=ca
 
+mkdir -p ${WORKDIR}
+
 # Generate CA key
 openssl req \
   -new \
@@ -18,101 +20,103 @@ openssl req \
   -out ${WORKDIR}/${CA}.crt \
   -days 365 \
   -subj '/CN=ca1.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US' \
-  -passin pass:$PASS \
-  -passout pass:$PASS
+  -passin pass:${PASS} \
+  -passout pass:${PASS}
 
 # Kafkacat
 # Private KEY
 openssl genrsa \
   -des3 \
-  -passout "pass:$PASS" \
-  -out ${WORKDIR}/kafkacat.client.key \
+  -passout "pass:${PASS}" \
+  -out ${WORKDIR}/client.key \
   1024
 
 # Signing Request
 openssl req \
-  -passin "pass:$PASS" \
-  -passout "pass:$PASS" \
-  -key ${WORKDIR}/kafkacat.client.key \
+  -passin "pass:${PASS}" \
+  -passout "pass:${PASS}" \
+  -key ${WORKDIR}/client.key \
   -new \
-  -out ${WORKDIR}/kafkacat.client.req \
+  -out ${WORKDIR}/client.req \
   -subj '/CN=kafkacat.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US'
 
 # Signed Key
 openssl x509 -req \
   -CA ${WORKDIR}/${CA}.crt \
   -CAkey ${WORKDIR}/${CA}.key \
-  -in ${WORKDIR}/kafkacat.client.req \
-  -out ${WORKDIR}/kafkacat-ca1-signed.pem \
+  -in ${WORKDIR}/client.req \
+  -out ${WORKDIR}/client.pem \
   -days 9999 \
   -CAcreateserial \
-  -passin "pass:$PASS"
+  -passin "pass:${PASS}"
 
 ## generate for golang
 
 echo "generating a private key without passphrase"
 openssl rsa \
-  -in ${WORKDIR}/kafkacat.client.key \
-  -passin "pass:$PASS" \
-  -out ${WORKDIR}/kafkacat-raw-private-key.pem
+  -in ${WORKDIR}/client.key \
+  -passin "pass:${PASS}" \
+  -out ${WORKDIR}/client.key.pem
 
-for i in kafka
+for BROKER in kafka
 do
-  echo $i
+  echo ${BROKER}
+
   # Create keystores
   keytool -genkey -noprompt \
-    -alias $i \
+    -alias ${BROKER} \
     -dname "CN=localhost, OU=TEST, O=CONFLUENT, L=PaloAlto, S=Ca, C=US" \
-    -keystore ${WORKDIR}/${i}.jks \
+    -keystore ${WORKDIR}/${BROKER}.jks \
     -keyalg RSA \
     -ext SAN=dns:${BROKER} \
-    -storepass $PASS \
-    -keypass $PASS
+    -storepass ${PASS} \
+    -keypass ${PASS}
 
   # Create CSR, sign the key and import back into keystore
   keytool  \
-    -keystore ${WORKDIR}/${i}.jks \
-    -alias $i \
+    -keystore ${WORKDIR}/${BROKER}.jks \
+    -alias ${BROKER} \
     -certreq \
-    -file ${WORKDIR}/${i}.csr \
-    -storepass $PASS \
-    -keypass $PASS
+    -file ${WORKDIR}/${BROKER}.csr \
+    -storepass ${PASS} \
+    -keypass ${PASS}
 
   openssl x509 \
     -req \
     -CA ${WORKDIR}/${CA}.crt  \
     -CAkey ${WORKDIR}/${CA}.key \
-    -in ${WORKDIR}/${i}.csr \
-    -out ${WORKDIR}/${i}.crt \
+    -in ${WORKDIR}/${BROKER}.csr \
+    -out ${WORKDIR}/${BROKER}.crt \
     -days 9999 \
     -CAcreateserial \
-    -passin pass:$PASS
+    -passin pass:${PASS}
 
+  # add CA in keystool
   keytool \
-    -keystore ${WORKDIR}/${i}.jks \
+    -keystore ${WORKDIR}/${BROKER}.jks \
     -alias CARoot \
     -import \
     -file ${WORKDIR}/${CA}.crt \
-    -storepass $PASS \
-    -keypass $PASS
+    -storepass ${PASS} \
+    -keypass ${PASS}
 
-  keytool -keystore ${WORKDIR}/${i}.jks \
-    -alias $i \
+  # add broker in keystool
+  keytool -keystore ${WORKDIR}/${BROKER}.jks \
+    -alias ${BROKER} \
     -import \
-    -file ${WORKDIR}/${i}.crt \
-    -storepass $PASS \
-    -keypass $PASS
+    -file ${WORKDIR}/${BROKER}.crt \
+    -storepass ${PASS} \
+    -keypass ${PASS}
 
   # Create truststore and import the CA cert.
-  keytool -keystore ${WORKDIR}/${i}.jks \
+  keytool -keystore ${WORKDIR}/${BROKER}.truststore.jks \
     -alias CARoot \
     -import \
     -file ${WORKDIR}/${CA}.crt \
-    -storepass $PASS \
-    -keypass $PASS
+    -storepass ${PASS} \
+    -keypass ${PASS}
 
-  echo $PASS > ${WORKDIR}/${i}_sslkey_creds
-  echo $PASS > ${WORKDIR}/${i}_keystore_creds
-  echo $PASS > ${WORKDIR}/${i}_truststore_creds
+  echo ${PASS} > ${WORKDIR}/${BROKER}_sslkey_creds
+  echo ${PASS} > ${WORKDIR}/${BROKER}_keystore_creds
+  echo ${PASS} > ${WORKDIR}/${BROKER}_truststore_creds
 done
-
