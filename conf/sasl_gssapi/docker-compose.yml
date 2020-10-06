@@ -1,0 +1,22 @@
+version: "3"
+services:
+ kerberos:
+  image: simagix/kerberos
+  hostname: kerberos
+  build:
+   context: .
+   dockerfile: kerberos/Dockerfile
+  environment:
+   REALM: SIMAGIX.COM
+   DOMAIN_REALM: kerberos.simagix.com
+   ADMIN_USER: admin
+   ADMIN_PASSWORD: secret
+
+ ldap:
+  image: simagix/openldap
+  hostname: ldap
+  build:
+   context: .
+   dockerfile: openldap/Dockerfile
+  environment:
+   ADMIN_PASSWORD: secret
