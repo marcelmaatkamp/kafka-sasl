@@ -1,0 +1,9 @@
+version: '3'
+services:
+
+ telegraf:
+  image: telegraf:sasl-test
+  build:
+   context: .
+   args:
+    VERSION: ${VERSION}
