@@ -51,7 +51,6 @@ services:
    CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
    CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
    CONFLUENT_METRICS_ENABLE: 'false'
-
   volumes:
    - ./conf/kafka/jaas.conf:/etc/kafka/jaas.conf
    - ./conf/kafka/keys/kafka.key:/etc/kafka/kafka.key
@@ -64,14 +63,16 @@ services:
    start_period: 30s
 
  telegraf-to-kafka:
-  image: telegraf:1.15
+# image: telegraf:1.15
+  image: telegraf:sasl-test
   depends_on:
    - kafka
   volumes:
    - ./conf/telegraf/telegraf-out.conf:/etc/telegraf/telegraf.conf
 
  telegraf:
-  image: telegraf:1.15
+# image: telegraf:1.15
+  image: telegraf:sasl-test
   depends_on:
    - kafka
    - telegraf-to-kafka
