@@ -69,6 +69,7 @@ services:
    - kafka
   volumes:
    - ./conf/telegraf/telegraf-out.conf:/etc/telegraf/telegraf.conf
+   
 
  telegraf:
 # image: telegraf:1.15
