@@ -1,14 +1,18 @@
 #!/bin/bash
 # https://github.com/Mongey/terraform-provider-kafka/blob/master/secrets/create-certs.sh
 
-set -o nounset \
-  -o errexit \
-  -o verbose \
-  -o xtrace
+set \
+ -o nounset \
+ -o errexit \
+ -o verbose \
+ -o xtrace
 
 PASS=confluent
 WORKDIR=conf/keys
+
 CA=ca
+CLIENT=client
+BROKER=kafka
 
 mkdir -p ${WORKDIR}/ca
 mkdir -p ${WORKDIR}/kafka
@@ -34,24 +38,24 @@ openssl req \
 openssl genrsa \
   -des3 \
   -passout "pass:${PASS}" \
-  -out ${WORKDIR}/client/client.key \
+  -out ${WORKDIR}/client/${CLIENT}.key \
   1024
 
 # Signing Request
 openssl req \
   -passin "pass:${PASS}" \
   -passout "pass:${PASS}" \
-  -key ${WORKDIR}/client/client.key \
+  -key ${WORKDIR}/client/${CLIENT}.key \
   -new \
-  -out ${WORKDIR}/client/client.req \
+  -out ${WORKDIR}/client/${CLIENT}.req \
   -subj '/CN=kafkacat.test.confluent.io/OU=TEST/O=CONFLUENT/L=PaloAlto/S=Ca/C=US'
 
 # Signed Key
 openssl x509 -req \
-  -CA ${WORKDIR}/${CA}.crt \
-  -CAkey ${WORKDIR}/${CA}.key \
-  -in ${WORKDIR}/client/client.req \
-  -out ${WORKDIR}/client/client.pem \
+  -CA ${WORKDIR}/ca/${CA}.crt \
+  -CAkey ${WORKDIR}/ca/${CA}.key \
+  -in ${WORKDIR}/client/${CLIENT}.req \
+  -out ${WORKDIR}/client/${CLIENT}.pem \
   -days 9999 \
   -CAcreateserial \
   -passin "pass:${PASS}"
@@ -59,9 +63,9 @@ openssl x509 -req \
 ## generate for golang
 echo "generating a private key without passphrase"
 openssl rsa \
-  -in ${WORKDIR}/client/client.key \
+  -in ${WORKDIR}/client/${CLIENT}.key \
   -passin "pass:${PASS}" \
-  -out ${WORKDIR}/client/client.key.pem
+  -out ${WORKDIR}/client/${CLIENT}.key.pem
 
 # kafka keys 
 # ----------
